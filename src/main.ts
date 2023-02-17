@@ -7,7 +7,7 @@ const { configureChains, createClient, ...wagmiCore } = wagmi;
 
 declare global {
   interface Window {
-    onInstanceReady: any;
+    onCWInstanceReady: any;
     getCW: any;
   }
 }
@@ -42,6 +42,6 @@ window.getCW = (projectId: string) => {
   }
 };
 
-if (typeof window.onInstanceReady === 'function') {
-  window.onInstanceReady(window.getCW)
+if (typeof window.onCWInstanceReady === 'function') {
+  window.onCWInstanceReady(window.getCW)
 }
