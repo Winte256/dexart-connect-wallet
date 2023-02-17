@@ -1,19 +1,47 @@
-import * as core from "@wagmi/core";
-import * as chains from "@wagmi/core/chains";
-import * as html from "@web3modal/html";
-import * as ethereum from "@web3modal/ethereum";
+import * as wagmi from '@wagmi/core'
+import { bsc } from '@wagmi/core/chains'
+import { EthereumClient, modalConnectors, walletConnectProvider } from '@web3modal/ethereum'
+import { Web3Modal } from '@web3modal/html'
+
+const { configureChains, createClient, ...wagmiCore } = wagmi;
 
 declare global {
   interface Window {
-    WalletConnectCore: any;
-    initWalletConnectCore: any;
+    onInstanceReady: any;
+    getCW: any;
   }
 }
 
-window.WalletConnectCore = {
-  core, chains, html, ethereum
-}
+let instance: any;
 
-if (typeof window.initWalletConnectCore === 'function') {
-  window.initWalletConnectCore(window.WalletConnectCore)
+window.getCW = (projectId: string) => {
+  if (typeof instance !== undefined) {
+    return instance
+  }
+  
+  // 2. Configure wagmi client
+  const { provider, chains } = configureChains([bsc], [walletConnectProvider({ projectId })])
+  const connectors = modalConnectors({ appName: 'web3Modal', chains })
+
+  const wagmiClient = createClient({
+    autoConnect: true,
+    connectors: connectors,
+    provider
+  })
+
+  // 3. Create ethereum and modal clients
+  const ethereumClient = new EthereumClient(wagmiClient, chains)
+  const web3Modal = new Web3Modal(
+    { projectId },
+    ethereumClient
+  )
+
+  return {
+    web3Modal,
+    wagmiCore,
+  }
+};
+
+if (typeof window.onInstanceReady === 'function') {
+  window.onInstanceReady(window.getCW)
 }
