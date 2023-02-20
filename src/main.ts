@@ -12,13 +12,7 @@ declare global {
   }
 }
 
-let instance: any;
-
-window.getCW = (projectId: string) => {
-  if (typeof instance !== undefined) {
-    return instance
-  }
-  
+window.getCW = (projectId: string) => {  
   // 2. Configure wagmi client
   const { provider, chains } = configureChains([bsc], [walletConnectProvider({ projectId })])
   const connectors = modalConnectors({ appName: 'web3Modal', chains })
