@@ -35,7 +35,7 @@ window.getCW = (projectId: string) => {
     { projectId },
     ethereumClient
   )
-
+  
   return {
     web3Modal,
     wagmiCore,
