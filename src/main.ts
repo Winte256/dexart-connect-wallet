@@ -1,9 +1,9 @@
 import * as wagmi from '@wagmi/core'
 import { bsc } from '@wagmi/core/chains'
-import { EthereumClient, modalConnectors, walletConnectProvider } from '@web3modal/ethereum'
+import { EthereumClient, w3mConnectors, w3mProvider  } from '@web3modal/ethereum'
 import { Web3Modal } from '@web3modal/html'
 
-const { configureChains, createClient, ...wagmiCore } = wagmi;
+const { configureChains, createConfig, ...wagmiCore } = wagmi;
 
 declare global {
   interface Window {
@@ -12,15 +12,17 @@ declare global {
   }
 }
 
+const chains = [bsc]
+
 window.getCW = (projectId: string) => {  
   // 2. Configure wagmi client
-  const { provider, chains } = configureChains([bsc], [walletConnectProvider({ projectId })])
-  const connectors = modalConnectors({ appName: 'web3Modal', chains })
+  const { publicClient } = configureChains(chains, [w3mProvider({ projectId })])
+  const connectors = w3mConnectors({ projectId, chains })
 
-  const wagmiClient = createClient({
+  const wagmiClient = createConfig({
     autoConnect: true,
-    connectors: connectors,
-    provider
+    connectors,
+    publicClient
   })
 
   // 3. Create ethereum and modal clients
